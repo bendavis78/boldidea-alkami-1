@@ -1,0 +1,173 @@
+<html><link rel="stylesheet" type="text/css" href="css/style.css"><head></head>
+<body>
+	
+<!-- Include other libraries here (keep three.js at the top): -->
+<script src="js/Three.js"></script>
+<script src="js/jason.js"></script>
+	<script src="js/Scoreboard.js"></script>
+<script>
+
+// Add variables that are defined in other libraries below to avoid warnings:
+/* global THREE, Scoreboard */
+
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+ var renderer = new THREE.WebGLRenderer({alpha: true});
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+// var geometry = new THREE.BoxGeometry( 5, 1, 1 );
+// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+// var cube = new THREE.Mesh( geometry, material );
+// scene.add( cube );
+
+scene.add(getSphereMesh(15));
+
+var geometry = new THREE.SphereGeometry(20, 75);
+geometry.position = new THREE.Vector3(40,40,40);
+var material = new THREE.MeshNormalMaterial();
+var jason = new THREE.Mesh(geometry, material);
+
+
+
+camera.position.z = 0;
+camera.position.y = 500;
+camera.position.x = 0;
+camera.rotation.x = 3*Math.PI /2;
+
+function animate() {
+	requestAnimationFrame( animate );
+	renderer.render( scene, camera );
+}
+animate();
+
+var timer = new Scoreboard();
+timer.countdown(60);
+timer.message('make stargirl pay for creating the zombie apocolpse by sending her to the moon');
+    
+    
+    
+
+
+//don't forget to add your object to the scene or some other object:
+
+
+
+function getSphereMesh(radius, widthSegment, hieghtSegment) { 
+    var geometry = new THREE.SphereGeometry(radius, widthSegment, hieghtSegment);
+    // geometry.position.x = 
+    var material = new THREE.MeshNormalMaterial();
+    var mesh = new THREE.Mesh(geometry, material);
+    return mesh;
+}
+
+scene.add(jason);
+function getPlaneMesh(width, height) { 
+    var shape = new THREE.PlaneGeometry(width, height);
+    material = new THREE.MeshNormalMaterial();
+    var mesh = new THREE.Mesh(shape, material);
+    return mesh;
+}
+
+
+var shape = new THREE.PlaneGeometry(250, 250);
+ material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+var floor = new THREE.Mesh(shape, material);
+floor.rotation.x = Math.PI / 2;
+scene.add(floor);
+
+var is_up_pressed, is_down_pressed, is_right_pressed, is_left_pressed;
+document.addEventListener('keydown', function(event) {
+		var code = event.keyCode;
+		if (code == 65 || code == 37) jason.postition.x = jason.postition.x-5;
+	
+	});
+
+
+
+//var is_up_pressed, is_down_pressed, is_left_pressed, is_right_pressed;
+//	document.addEventListener('keyup', function(event) {
+//			var code = event.keyCode;
+			
+//			if (code == 65 || code == 37) is_left_pressed = false;
+//			if (code == 87 || code == 38) is_down_pressed = false;
+//			if (code == 68 || code == 39) is_right_pressed = false;
+//			if (code == 83 || code == 40) is_up_pressed = false;
+//		});
+		
+/*				
+		function isWalking() {
+		  if (is_right_pressed) return true;
+		  if (is_left_pressed) return true;	
+		  if (is_up_pressed) return true;	
+		  if (is_down_pressed) return true;
+		  return false;
+		}
+		
+     var stepDistance = 25;
+		
+		function walk() {
+		  if (!isWalking()) return;
+		  var position = Math.sin(clock.getElapsedTime()*10) *100;
+		  right_hand.position.z = position;
+		  left_hand.position.z = -position;
+		  right_foot.position.z = -position;
+		  left_foot.position.z = position;
+		  
+		  var xDiff = 0, zDiff = 0;
+		  xDiff = -Math.sin(direction) * stepDistance;
+		  zDiff = -Math.cos(direction) * stepDistance;
+		  
+		  if (is_up_pressed) {
+		    jason.position.x += xDiff;
+		  	jason.position.z += zDiff;
+		  }
+		  
+		  if (is_down_pressed) {
+		  	jason.position.x -= xDiff;
+		  	jason.position.z -= zDiff;
+		  }
+		}				
+	
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body></html>
