@@ -9,6 +9,7 @@
     <script src="js/Three.js"></script>
     <script src="js/jason.js"></script>
     <script src="js/Scoreboard.js"></script>
+    <!--<script src="js/physi.js"></script>-->
 
     <script>
         // Add variables that are defined in other libraries below to avoid warnings:
@@ -27,7 +28,8 @@
         // scene.add( cube );
 
         //scene.add(getSphereMesh(15));
-
+        var collision_Objects = [];
+        
         var geometry = new THREE.SphereGeometry(10, 75);
         geometry.position = new THREE.Vector3(40, 40, 40);
         var material = new THREE.MeshNormalMaterial();
@@ -42,11 +44,12 @@
         //camera.rotation.y = 2*Math.PI;
 
         function animate() {
+            console.log("Calling animate function.");
             move();
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
-        animate();
+       
 
 
 
@@ -103,33 +106,56 @@
             var wallMesh3 = new THREE.Mesh(wallShape3, wallMaterial3);
             return wallMesh3;
         }
-
+        
+        function detectCollisions() {
+            // console.log("Detecting collisions now.");
+            var vector = new THREE.Vector3(-.0000001, -0.1, .0000001);
+            var ray = new THREE.Ray(jason.position, vector);
+            for(var i=0; i<collision_Objects.length; i++) {
+                var intersects = ray.intersectObject(collision_Objects[i]);
+                if (intersects) {
+                    console.log("Collision Detected");
+                    
+                    return true;
+                } 
+            }
+            return false; 
+        }
+    
+    
+            
+            
         var upperWall = getPlaneMesh(0x429ef4, 250, 250);
         rotateObject(upperWall, 180, 0, 0);
         upperWall.position.set(0, 30, 100);
         scene.add(upperWall);
+        collision_Objects.push(upperWall);
 
         var lowerWall = getPlaneMesh(0x429ef4, 250, 250);
         rotateObject(lowerWall, 180, 0, 0);
         lowerWall.position.set(0, 30, -100);
         scene.add(lowerWall);
+        collision_Objects.push(lowerWall);
 
         var leftWall = getPlaneMesh(0x429ef4, 208, 230);
         rotateObject(leftWall, 0, 270, 0);
         leftWall.position.set(-130, 30, 0);
         scene.add(leftWall);
+        collision_Objects.push(leftWall);
 
         var rightWall = getPlaneMesh(0x429ef4, 208, 230);
         rotateObject(rightWall, 0, 270, 0);
         rightWall.position.set(130, 30, 0);
         scene.add(rightWall);
+        collision_Objects.push(rightWall);
         
-        var puzzle_1 = getPlaneMesh(0x31f213, 25, 25);
+        var puzzle_1 = getPlaneMesh(0x31f213, 100, 100);
                 rotateObject(puzzle_1, 90, 0, 0);
-        puzzle_1.position.x = 0;
-        puzzle_1.position.y = 1;
-        puzzle_1.position.z = 0;
+        puzzle_1.position.x = 40;
+        puzzle_1.position.y = 10;
+        puzzle_1.position.z = 40;
         scene.add(puzzle_1);
+        collision_Objects.push(puzzle_1);
 
         var is_up_pressed, is_down_pressed, is_left_pressed, is_right_pressed;
 
@@ -152,10 +178,29 @@
         });
         
         function move() {
-            if (is_up_pressed) jason.position.z -= 5;
-            if (is_down_pressed) jason.position.z += 5;
-            if (is_left_pressed) jason.position.x -= 5;
-            if (is_right_pressed) jason.position.x += 5;
+            if (is_up_pressed) {
+                jason.position.z -= 5; 
+                
+                if (detectCollisions()) jason.position.z += 5;  
+            }
+            
+            if (is_down_pressed) {
+                jason.position.z += 5;
+                
+                 if (detectCollisions()) jason.position.z -= 5;  
+            }
+            
+            if (is_left_pressed) {
+                jason.position.x -= 5;
+                
+                 if (detectCollisions()) jason.position.x += 5;  
+            }
+            
+            if (is_right_pressed) {
+                jason.position.x += 5;
+                
+                 if (detectCollisions()) jason.position.x -= 5;  
+            }
         }
 
         /*function isWalking() {
@@ -165,6 +210,8 @@
             if (is_down_pressed) return true;
             return false;
         }*/
+        
+        animate();
         
     </script>
 </body>
