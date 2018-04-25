@@ -88,7 +88,12 @@ move the camera to the next room after going through the door, and having no col
         }
 
         var floorShape = new THREE.PlaneGeometry(250, 250);
-        var floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+        var floorMaterial = new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture('images/floor.jpg'),
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+
         var floorMesh = new THREE.Mesh(floorShape, floorMaterial);
         rotateObject(floorMesh, 90, 0, 0);
         floorMesh.position.x = 0;
@@ -131,10 +136,11 @@ move the camera to the next room after going through the door, and having no col
             }
             // If so, we didn't collide with wall, we collided with an open door!
 
-            var Wallintersects = ray.intersectObjects(walls);
-            if (Wallintersects.length > 0) {
-                console.log("Collision Detected");
-                return true;
+
+            for (var i = 0; i < walls.length; i++) {
+                if (ray.intersectObjects(walls[i].children).length > 0) {
+                    return true;
+                }
             }
             return false;
         }
@@ -152,27 +158,35 @@ move the camera to the next room after going through the door, and having no col
                 var wall = new THREE.Group();
                 var Crossbeam = new THREE.Mesh(
                     new THREE.CubeGeometry(10, 10, 250),
-                    new THREE.MeshNormalMaterial()
+                    new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('images/brick.jpeg'),
+                        transparent: true
+                    })
                 );
                 Crossbeam.position.set(0, 80, 0);
                 wall.add(Crossbeam);
-                
-                 var LeftWallS = new THREE.Mesh(
+
+                var LeftWallS = new THREE.Mesh(
                     new THREE.CubeGeometry(10, 150, 75),
-                    new THREE.MeshNormalMaterial()
+                    new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('images/brick.jpeg'),
+                        transparent: true
+                    })
                 );
                 LeftWallS.position.set(0, 0, -87.5);
                 wall.add(LeftWallS);
-                
-                 var RightWallS = new THREE.Mesh(
+
+                var RightWallS = new THREE.Mesh(
                     new THREE.CubeGeometry(10, 150, 75),
-                    new THREE.MeshNormalMaterial()
+                    new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('images/brick.jpeg'),
+                        transparent: true
+                    })
                 );
                 RightWallS.position.set(0, 0, 87.5);
                 wall.add(RightWallS)
                 return wall;
             }
-
             for (var i = 0; i < 4; i++) {
                 var wall = makeWall();
             }
@@ -211,9 +225,12 @@ move the camera to the next room after going through the door, and having no col
             function makedoor() {
                 return new THREE.Mesh(
                     new THREE.CubeGeometry(12, 140, 100),
-                    new THREE.MeshBasicMaterial({ color: 0x623400 })
-                );
-            }
+                    new THREE.MeshNormalMaterial());
+                    // new THREE.MeshBasicMaterial({
+                    //     map: THREE.ImageUtils.loadTexture('images/door.jpg'),
+                    //     transparent: true
+                  //  }));
+            };
 
             Door_1 = makedoor();
             Door_1.position.x = 130;
@@ -222,6 +239,7 @@ move the camera to the next room after going through the door, and having no col
             scene.add(Door_1);
         }
         makeRoom();
+        makeRoom(250, 0);
 
         var is_up_pressed, is_down_pressed, is_left_pressed, is_right_pressed;
         var is_q_pressed;
@@ -274,10 +292,12 @@ move the camera to the next room after going through the door, and having no col
                 console.log("you ran into the button");
                 // TODO: add door to opened_doors array
                 if (opened_doors.length == 0) {
+                    console.log('opining doorish uno')
                     opened_doors.push(Door_1);
                     //Door_1.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
                     // Door_1.material.transparent = true;
                     Door_1.visible = false;
+                    //Door_1.material.transparent=true;
                     puzzle_1.material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide })
                 }
             }
