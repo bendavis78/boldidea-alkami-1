@@ -70,7 +70,6 @@ move the camera to the next room after going through the door, and having no col
             return mesh;
         }
 
-
         function rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
             degreeX = (degreeX * Math.PI) / 180;
             degreeY = (degreeY * Math.PI) / 180;
@@ -96,16 +95,9 @@ move the camera to the next room after going through the door, and having no col
         floorMesh.position.z = 0;
         scene.add(floorMesh);
 
-        function getPlaneMesh(color, width = 1, height = 1, widthSegments = 1, heightSegments = 1) {
-            var wallShape3 = new THREE.PlaneGeometry(width, height, widthSegments, heightSegments);
-            var wallMaterial3 = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
-            var wallMesh3 = new THREE.Mesh(wallShape3, wallMaterial3);
-            return wallMesh3;
-        }
-
         function detectButtonCollisions() {
             var vector = new THREE.Vector3(0, -1, 0);
-            // ray will only intersect if its origin is outside of the object,
+            // Ray will only intersect if its origin is outside of the object,
             // so we need to start it up really high
             var rayOrigin = new THREE.Vector3(marker.position.x, 200, marker.position.z);
             var ray = new THREE.Raycaster(rayOrigin, vector);
@@ -119,26 +111,29 @@ move the camera to the next room after going through the door, and having no col
 
         function detectWallCollisions() {
             var vector = new THREE.Vector3(0, -1, 0);
-            // ray will only intersect if its origin is outside of the object,
+            
+            // Ray will only intersect if its origin is outside of the object,
             // so we need to start it up really high
             var rayOrigin = new THREE.Vector3(marker.position.x, 200, marker.position.z);
             var ray = new THREE.Raycaster(rayOrigin, vector);
-            // TODO check to see if any doors were intersected
+            
+            // Check to see if any doors were intersected
             var Doorintersects = ray.intersectObjects(opened_doors);
+            
+            console.log(opened_doors);
             if (Doorintersects.length > 0) {
-                console.log("Door Collision detected");
+                console.log('hit a door')
                 return false;
             }
+            
             // If so, we didn't collide with wall, we collided with an open door!
-
-            var Wallintersects = ray.intersectObjects(walls);
-            if (Wallintersects.length > 0) {
-                console.log("Collision Detected");
-                return true;
+            for (var i = 0; i < walls.length; i++) {
+                if (ray.intersectObjects(walls[i].children).length > 0) {
+                    return true;
+                }
             }
             return false;
         }
-
 
         var puzzle_1;
         var Door_1;
@@ -172,6 +167,13 @@ move the camera to the next room after going through the door, and having no col
                 wall.add(RightWallS)
                 return wall;
             }
+            
+            function makeButton() {
+                return new THREE.Mesh(
+                    new THREE.PlaneGeometry(50, 50),
+                    new THREE.MeshBasicMaterial({ color: 0x31f213, side: THREE.DoubleSide })
+                );
+            }
 
             for (var i = 0; i < 4; i++) {
                 var wall = makeWall();
@@ -200,7 +202,9 @@ move the camera to the next room after going through the door, and having no col
             scene.add(rightWall);
             walls.push(rightWall);
 
-            puzzle_1 = getPlaneMesh(0x31f213, 49.9999, 49.9999);
+            puzzle_1 = makeButton();
+            
+            (0x31f213, 49.9999, 49.9999);
             rotateObject(puzzle_1, 90, 0, 0);
             puzzle_1.position.x = 40;
             puzzle_1.position.y = -73;
@@ -224,12 +228,10 @@ move the camera to the next room after going through the door, and having no col
         makeRoom();
 
         var is_up_pressed, is_down_pressed, is_left_pressed, is_right_pressed;
-        var is_q_pressed;
 
         document.addEventListener('keyup', function(event) {
             var code = event.keyCode;
 
-            if (code == 81) is_q_pressed = false;
             if (code == 65 || code == 37) is_left_pressed = false;
             if (code == 87 || code == 38) is_up_pressed = false;
             if (code == 68 || code == 39) is_right_pressed = false;
@@ -239,7 +241,6 @@ move the camera to the next room after going through the door, and having no col
         document.addEventListener('keydown', function(event) {
             var code = event.keyCode;
 
-            if (code == 81) is_q_pressed = true;
             if (code == 65 || code == 37) is_left_pressed = true;
             if (code == 87 || code == 38) is_up_pressed = true;
             if (code == 68 || code == 39) is_right_pressed = true;
@@ -249,34 +250,27 @@ move the camera to the next room after going through the door, and having no col
         function move() {
             if (is_up_pressed) {
                 marker.position.z -= 5;
-
                 if (detectWallCollisions()) marker.position.z += 5;
             }
 
             if (is_down_pressed) {
                 marker.position.z += 5;
-
                 if (detectWallCollisions()) marker.position.z -= 5;
             }
 
             if (is_left_pressed) {
                 marker.position.x -= 5;
-
                 if (detectWallCollisions()) marker.position.x += 5;
             }
 
             if (is_right_pressed) {
                 marker.position.x += 5;
-
                 if (detectWallCollisions()) marker.position.x -= 5;
             }
+            
             if (detectButtonCollisions()) {
-                console.log("you ran into the button");
-                // TODO: add door to opened_doors array
                 if (opened_doors.length == 0) {
                     opened_doors.push(Door_1);
-                    //Door_1.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-                    // Door_1.material.transparent = true;
                     Door_1.visible = false;
                     puzzle_1.material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide })
                 }
