@@ -220,8 +220,13 @@ move the camera to the next room after going through the door, and having no col
             // add to the buttons array
             buttons.push(puzzle_1)
 
+            // make the room variable accessable from the button, which will be useful 
+            // when we need it in the getTouchedButton() function
+            puzzle_1.room = room;
+
             return room;
         }
+
         var room1 = makeRoom();
         scene.add(room1);
 
@@ -276,7 +281,7 @@ move the camera to the next room after going through the door, and having no col
                     button.material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide })
 
                     removeFromArray(doors, button.door);
-                    scene.remove(button.door);
+                    button.room.remove(button.door);
                     button.door = null;
                     
                 }
