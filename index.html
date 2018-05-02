@@ -78,20 +78,6 @@ move the camera to the next room after going through the door, and having no col
             return wallMesh3;
         }
 
-        var floorShape = new THREE.PlaneGeometry(250, 250);
-        var floorMaterial = new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture('images/floor.jpg'),
-            transparent: true,
-            side: THREE.DoubleSide
-        });
-
-        var floorMesh = new THREE.Mesh(floorShape, floorMaterial);
-        rotateObject(floorMesh, 90, 0, 0);
-        floorMesh.position.x = 0;
-        floorMesh.position.y = -74;
-        floorMesh.position.z = 0;
-        scene.add(floorMesh);
-
         function getTouchedButton() {
             var vector = new THREE.Vector3(0, -1, 0);
             // ray will only intersect if its origin is outside of the object,
@@ -133,6 +119,22 @@ move the camera to the next room after going through the door, and having no col
 
             var room = {};
             room.walls = [];
+
+            // make the floor
+            var floorShape = new THREE.PlaneGeometry(250, 250);
+            var floorMaterial = new THREE.MeshBasicMaterial({
+                map: THREE.ImageUtils.loadTexture('images/floor.jpg'),
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+
+            var floorMesh = new THREE.Mesh(floorShape, floorMaterial);
+            rotateObject(floorMesh, 90, 0, 0);
+            floorMesh.position.x = 0;
+            floorMesh.position.y = -74;
+            floorMesh.position.z = 0;
+            scene.add(floorMesh);
+
 
             function makeWall() {
                 var wall = new THREE.Group();
