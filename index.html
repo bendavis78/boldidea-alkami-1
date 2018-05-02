@@ -13,7 +13,7 @@ move the camera to the next room after going through the door, and having no col
     <script src="js/jason.js"></script>
     <script src="js/Scoreboard.js"></script>
     <script src="js/OrbitControls.js"></script>
-    <script type="text/javascript" src="js/Collisions.js"></script>
+    <!--<script type="text/javascript" src="js/Collisions.js"></script>-->
     <!--<script src="js/physi.js"></script>-->
 
     <script>
@@ -44,7 +44,7 @@ move the camera to the next room after going through the door, and having no col
 
         camera.position.x = 0;
         camera.position.y = 500;
-        camera.position.z = 100;
+        camera.position.z = 0;
         camera.rotation.x = 3 * Math.PI / 2; // point it straight down
 
         function animate() {
@@ -70,7 +70,7 @@ move the camera to the next room after going through the door, and having no col
             object.rotation.y = degreeY;
             object.rotation.z = degreeZ;
         }
-        
+
         function getPlaneMesh(color, width = 1, height = 1, widthSegments = 1, heightSegments = 1) {
             var wallShape3 = new THREE.PlaneGeometry(width, height, widthSegments, heightSegments);
             var wallMaterial3 = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
@@ -107,20 +107,25 @@ move the camera to the next room after going through the door, and having no col
         }
 
         function isCollidingWithObstacle() {
-            // console.log('walls', walls, 'doors', doors);
-            var collidedWalls = jason.intersects(walls);
+            var vector = new THREE.Vector3(0, -1, 0);
+            // ray will only intersect if its origin is outside of the object,
+            // so we need to start it up really high
+            var rayOrigin = new THREE.Vector3(marker.position.x, 200, marker.position.z);
+            var ray = new THREE.Raycaster(rayOrigin, vector);
+            
+            var collidedWalls = ray.intersectObjects(walls);
             if (collidedWalls.length > 0) {
                 console.log("wall collision detected");
                 return true;
-            } 
-            var collidedDoors = jason.intersects(doors);
+            }
+            var collidedDoors = ray.intersectObjects(doors);
             if (collidedDoors.length > 0) {
                 console.log("door collision detected");
                 return true;
             }
             return false
         }
-        
+
         var puzzle_1;
         var Door_1;
 
@@ -152,36 +157,36 @@ move the camera to the next room after going through the door, and having no col
                 wall.add(LeftWallS);
                 walls.push(LeftWallS);
 
-                // var RightWallS = new THREE.Mesh(
-                //     new THREE.CubeGeometry(10, 150, 75),
-                //     new THREE.MeshBasicMaterial({
-                //         map: THREE.ImageUtils.loadTexture('images/brick.jpeg'),
-                //         transparent: true
-                //     })
-                // );
-                // RightWallS.position.set(0, 0, 87.5);
-                // wall.add(RightWallS)
-                // walls.push(RightWallS);
+                var RightWallS = new THREE.Mesh(
+                    new THREE.CubeGeometry(10, 150, 75),
+                    new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('images/brick.jpeg'),
+                        transparent: true
+                    })
+                );
+                RightWallS.position.set(0, 0, 87.5);
+                wall.add(RightWallS)
+                walls.push(RightWallS);
                 return wall;
             }
-            
+
             var upperWall = makeWall()
             rotateObject(upperWall, 0, 90, 0);
             upperWall.position.set(0, 0, -120);
             scene.add(upperWall);
 
-            // var lowerWall = makeWall();
-            // rotateObject(lowerWall, 0, 90, 0);
-            // lowerWall.position.set(0, 0, 120);
-            // scene.add(lowerWall);
+            var lowerWall = makeWall();
+            rotateObject(lowerWall, 0, 90, 0);
+            lowerWall.position.set(0, 0, 120);
+            scene.add(lowerWall);
 
-            // var leftWall = makeWall();
-            // leftWall.position.set(-130, 0, 0);
-            // scene.add(leftWall);
+            var leftWall = makeWall();
+            leftWall.position.set(-130, 0, 0);
+            scene.add(leftWall);
 
-            // var rightWall = makeWall();
-            // rightWall.position.set(130, 0, 0);
-            // scene.add(rightWall);
+            var rightWall = makeWall();
+            rightWall.position.set(130, 0, 0);
+            scene.add(rightWall);
 
             function makedoor() {
                 return new THREE.Mesh(
@@ -190,7 +195,7 @@ move the camera to the next room after going through the door, and having no col
                         map: THREE.ImageUtils.loadTexture('images/door.jpg')
                     }));
             };
-            
+
             // function makedoor() {
             //     return new THREE.Mesh(
             //         new THREE.CubeGeometry(12, 140, 100),
@@ -204,7 +209,7 @@ move the camera to the next room after going through the door, and having no col
             Door_1.position.z = 0;
             scene.add(Door_1);
             doors.push(Door_1);
-            
+
             puzzle_1 = getPlaneMesh(0x31f213, 50, 50);
             rotateObject(puzzle_1, 90, 0, 0);
             puzzle_1.position.x = 40;
@@ -256,18 +261,25 @@ move the camera to the next room after going through the door, and having no col
                 marker.position.x += 5;
                 if (isCollidingWithObstacle()) marker.position.x -= 5;
             }
-            
+
             var button = getTouchedButton();
             if (button) {
                 console.log("you ran into the button", button);
                 if (button.door) {
                     console.log('opining doorish uno')
                     puzzle_1.material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide })
-                    
+
+                    removeFromArray(doors, button.door);
                     scene.remove(button.door);
                     button.door = null;
+                    
                 }
             }
+        }
+        
+        function removeFromArray(arr, item) {
+            var index = arr.indexOf(item);
+            if (index !== -1) arr.splice(index, 1);
         }
 
         animate();
