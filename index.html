@@ -117,7 +117,7 @@ move the camera to the next room after going through the door, and having no col
 
         function makeRoom(centerX, centerZ) {
 
-            var room = {};
+            var room = new THREE.Group();
             room.walls = [];
 
             // make the floor
@@ -133,7 +133,7 @@ move the camera to the next room after going through the door, and having no col
             floorMesh.position.x = 0;
             floorMesh.position.y = -74;
             floorMesh.position.z = 0;
-            scene.add(floorMesh);
+            room.add(floorMesh);
 
 
             function makeWall() {
@@ -175,20 +175,20 @@ move the camera to the next room after going through the door, and having no col
             var upperWall = makeWall()
             rotateObject(upperWall, 0, 90, 0);
             upperWall.position.set(0, 0, -120);
-            scene.add(upperWall);
+            room.add(upperWall);
 
             var lowerWall = makeWall();
             rotateObject(lowerWall, 0, 90, 0);
             lowerWall.position.set(0, 0, 120);
-            scene.add(lowerWall);
+            room.add(lowerWall);
 
             var leftWall = makeWall();
             leftWall.position.set(-130, 0, 0);
-            scene.add(leftWall);
+            room.add(leftWall);
 
             var rightWall = makeWall();
             rightWall.position.set(130, 0, 0);
-            scene.add(rightWall);
+            room.add(rightWall);
 
             function makedoor() {
                 return new THREE.Mesh(
@@ -209,7 +209,7 @@ move the camera to the next room after going through the door, and having no col
             Door_1.position.x = 130;
             Door_1.position.y = 0;
             Door_1.position.z = 0;
-            scene.add(Door_1);
+            room.add(Door_1);
             doors.push(Door_1);
 
             puzzle_1 = getPlaneMesh(0x31f213, 50, 50);
@@ -218,9 +218,12 @@ move the camera to the next room after going through the door, and having no col
             puzzle_1.position.y = -73;
             puzzle_1.position.z = 40;
             puzzle_1.door = Door_1;
-            scene.add(puzzle_1);
+            room.add(puzzle_1);
+
+            return room;
         }
         makeRoom();
+
         //makeRoom(250, 0);
 
         var is_up_pressed, is_down_pressed, is_left_pressed, is_right_pressed;
